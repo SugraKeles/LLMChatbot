@@ -14,10 +14,8 @@ namespace LLMChatbot
 {
     public partial class Form1 : Form
     {
-        // BURAYA KENDİ GOOGLE API KEY'İNİ YAPIŞTIR
         private const string ApiKey = "AIzaSyAJq5o0WS9yglAxkyWh0YbbmiVynA4ssJs";
 
-        // Google Gemini API URL'si (Model: gemini-1.5-flash)
         private const string ApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
         public Form1()
         {
@@ -29,20 +27,16 @@ namespace LLMChatbot
             string userMessage = txtMesaj.Text.Trim();
             if (string.IsNullOrEmpty(userMessage)) return;
 
-            // 1. Kullanıcı mesajını ekrana yaz
             AppendChatText("Sen: " + userMessage, Color.DarkGreen);
 
-            // Arayüzü hazırla
             txtMesaj.Clear();
             Gönder_button1.Enabled = false;
             Gönder_button1.Text = "Yazıyor...";
 
             try
             {
-                // 2. Gemini API'den cevap al
                 string botResponse = await GetGeminiResponse(userMessage);
 
-                // 3. Bot cevabını ekrana yaz
                 AppendChatText("Gemini: " + botResponse, Color.DarkSlateGray);
             }
             catch (Exception ex)
@@ -57,12 +51,10 @@ namespace LLMChatbot
             }
         }
 
-       // Gemini API'ye İstek Atan Fonksiyon
         private async Task<string> GetGeminiResponse(string message)
         {
             using (HttpClient client = new HttpClient())
             {
-                // Gemini için veri yapısını oluşturuyoruz
                 var requestData = new GeminiRequest
                 {
                     contents = new List<Content>
@@ -76,15 +68,12 @@ namespace LLMChatbot
                         }
                     }
                 };
-
-                // JSON'a çevir
+                
                 string jsonContent = JsonConvert.SerializeObject(requestData);
                 var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
-                // URL'in sonuna API Key eklenir
                 string fullUrl = ApiUrl + ApiKey;
 
-                // İsteği Gönder (POST)
                 var response = await client.PostAsync(fullUrl, httpContent);
 
                 string responseString = await response.Content.ReadAsStringAsync();
@@ -94,11 +83,8 @@ namespace LLMChatbot
                     throw new Exception($"API Hatası: {response.StatusCode} - {responseString}");
                 }
 
-                // Gelen cevabı çözümle (Deserialize)
                 var responseData = JsonConvert.DeserializeObject<GeminiResponse>(responseString);
 
-                // Cevap metnini ayıkla ve döndür
-                // Gemini cevabı candidates -> content -> parts -> text yolunda saklar
                 if (responseData.candidates != null && responseData.candidates.Count > 0)
                 {
                     return responseData.candidates[0].content.parts[0].text;
@@ -108,7 +94,6 @@ namespace LLMChatbot
             }
         }
 
-        // Ekrana Yazı Yazma Fonksiyonu
         private void AppendChatText(string text, Color color)
         {
             ChatHistory_richTextBox1.SelectionStart = ChatHistory_richTextBox1.TextLength;
@@ -124,9 +109,6 @@ namespace LLMChatbot
         }
     }
 
-
-
-    // --- GEMINI İÇİN GEREKLİ SINIFLAR (VERİ YAPILARI) ---
 
     public class GeminiRequest
     {
