@@ -14,7 +14,7 @@ namespace LLMChatbot
 {
     public partial class Form1 : Form
     {
-        private const string ApiKey = "AIzaSyAJq5o0WS9yglAxkyWh0YbbmiVynA4ssJs";
+        private const string ApiKey = "";
 
         private const string ApiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=";
         public Form1()
